@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres
+    container_name: psql
+    environment:
+      POSTGRES_DB: currency_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5111:5432"
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - "8080:8080"

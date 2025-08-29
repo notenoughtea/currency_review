@@ -1,0 +1,16 @@
+---
+server:
+  port: 8080
+  host: localhost
+CURRENCY_OUTER_KEY: c4d463b3224d9b77380e7e13
+DB:
+  host: localhost
+  user: admin
+  password: admin
+  dbname: currency_db
+  port: 5111
+  sslmode: disable
+  TimeZone: UTC
+GRPC:
+  port: 50051
+  protocol: tcp

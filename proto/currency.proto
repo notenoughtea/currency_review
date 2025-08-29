@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package currency;
+option go_package = "your/module/path/pkg;pkg";
+
+message CurrencyRates {
+  uint64 id = 1;
+  string result = 2;
+  string documentation = 3;
+  string terms_of_use = 4;
+  int64 time_last_update_unix = 5;
+  string time_last_update_utc = 6;
+  int64 time_next_update_unix = 7;
+  string time_next_update_utc = 8;
+  string base_code = 9;
+  map<string, double> conversion_rates = 10;
+  int64 created_at = 11;
+  int64 updated_at = 12;
+}
+
+message GetRateRequest {
+  string code = 1;
+}
+
+message GetRateResponse {
+  double value = 1;
+  bool found = 2;
+}
+
+message Empty {}
+
+service RatesService {
+  rpc GetRate(GetRateRequest) returns (GetRateResponse);
+  rpc GetAllRates(Empty) returns (CurrencyRates);
+}
