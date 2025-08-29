@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/notenoughtea/currency_review/gateway/config"
+	"github.com/notenoughtea/currency_review/gateway/internal/config"
 	"github.com/notenoughtea/currency_review/pkg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -51,7 +51,7 @@ func (c *Client) Get(ctx context.Context, code string) (*pkg.GetRateResponse, er
 	return c.cc.GetRate(ctx, &pkg.GetRateRequest{Code: code})
 }
 
-func GPRCclnt() {
+func GetAllRatesHandler() *pkg.CurrencyRates {
 	conf := config.GetConfGRPC()
 	hostString := fmt.Sprintf("localhost:%v", conf.Port)
 	cl, err := New(hostString)
@@ -62,14 +62,25 @@ func GPRCclnt() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(all, len(all.ConversionRates))
-	r, err := cl.Get(context.Background(), "EUR")
+	// fmt.Println(all, len(all.ConversionRates))
+	return all
+}
+
+func GetRateHandler(code string) (float64, error) {
+	conf := config.GetConfGRPC()
+	hostString := fmt.Sprintf("localhost:%v", conf.Port)
+	cl, err := New(hostString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r, err := cl.Get(context.Background(), code)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if r.Found {
-		fmt.Println("EUR", r.Value)
+		return r.Value, nil
 	} else {
-		fmt.Println("not found")
+		log.Println("not found")
 	}
+	return 0, err
 }

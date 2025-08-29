@@ -39,7 +39,7 @@ type RatesService interface {
 }
 
 type ratesService struct {
-	data *dto.CurrencyRates
+	db *gorm.DB
 }
 
 func GetRatesService() RatesService {
@@ -47,31 +47,17 @@ func GetRatesService() RatesService {
 	if err != nil {
 		log.Println("Ошибка подключения к базе")
 	}
-	var rate dto.CurrencyRates
-	dbInst.Order("created_at desc").First(&rate)
-
-	return &ratesService{
-		data: &dto.CurrencyRates{
-			ID:                 rate.ID,
-			Result:             rate.Result,
-			Documentation:      rate.Documentation,
-			TermsOfUse:         rate.TermsOfUse,
-			TimeLastUpdateUnix: rate.TimeLastUpdateUnix,
-			TimeLastUpdateUtc:  rate.TimeLastUpdateUtc,
-			TimeNextUpdateUnix: rate.TimeNextUpdateUnix,
-			TimeNextUpdateUtc:  rate.TimeNextUpdateUtc,
-			BaseCode:           rate.BaseCode,
-			ConversionRates:    rate.ConversionRates,
-			CreatedAt:          rate.CreatedAt,
-			UpdatedAt:          rate.UpdatedAt,
-		},
-	}
+	return &ratesService{db: dbInst}
 }
 
 func (s *ratesService) GetAll() *dto.CurrencyRates {
-	return s.data
+	var rate dto.CurrencyRates
+	s.db.Order("created_at desc").First(&rate)
+	return &rate
 }
 
 func (s *ratesService) Get(code string) (float64, bool) {
-	return s.data.GetRate(code)
+	var rate dto.CurrencyRates
+	s.db.Order("created_at desc").First(&rate)
+	return rate.GetRate(code)
 }

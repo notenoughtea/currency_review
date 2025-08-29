@@ -10,6 +10,8 @@ import (
 	"github.com/notenoughtea/currency_review/currency/internal/worker"
 )
 
+// "github.com/notenoughtea/currency_review/currency/internal/worker"
+
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
@@ -18,7 +20,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		worker.GetRatesDaily(ctx, 3000*time.Millisecond)
+		worker.GetRatesDaily(ctx, 12*time.Hour)
 	}()
 
 	wg.Wait()
