@@ -3,25 +3,14 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v3"
 )
 
-type Root struct {
-	Server           Server `yaml:"server"`
-	CurrencyOuterKey string `yaml:"CURRENCY_OUTER_KEY"`
-	DB               DB     `yaml:"DB"`
-	GRPC             GRPC   `yaml:"GRPC"`
-}
-
 type Server struct {
-	Port int    `yaml:"port"`
 	Host string `yaml:"host"`
-}
-
-type GRPC struct {
-	Port     int    `yaml:"port"`
-	Protocol string `yaml:"protocol"`
+	Port int    `yaml:"port"`
 }
 
 type DB struct {
@@ -34,62 +23,45 @@ type DB struct {
 	TimeZone string `yaml:"TimeZone"`
 }
 
-func GetServerConfig() Server {
-	data, err := os.ReadFile("../../../config.yaml")
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	var root Root
-	err = yaml.Unmarshal(data, &root)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	return root.Server
+type GRPC struct {
+	Port     int    `yaml:"port"`
+	Protocol string `yaml:"protocol"`
 }
 
-func GetDbConfig() DB {
-	data, err := os.ReadFile("../../../config.yaml")
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	var root Root
-	err = yaml.Unmarshal(data, &root)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	return root.DB
+type Root struct {
+	Server           Server `yaml:"server"`
+	CurrencyOuterKey string `yaml:"CURRENCY_OUTER_KEY"`
+	DB               DB     `yaml:"DB"`
+	GRPC             GRPC   `yaml:"GRPC"`
 }
 
-func GetToken() string {
-	data, err := os.ReadFile("../../../config.yaml")
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
+var cfg Root
 
-	var root Root
-	err = yaml.Unmarshal(data, &root)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+func Load() {
+	path := os.Getenv("CONFIG_PATH")
+	if path == "" {
+		log.Fatal("CONFIG_PATH not set")
 	}
-
-	return root.CurrencyOuterKey
+	data, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("read config: %v", err)
+	}
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		log.Fatalf("unmarshal config: %v", err)
+	}
+	if p := os.Getenv("PORT"); p != "" {
+		if v, err := strconv.Atoi(p); err == nil {
+			cfg.Server.Port = v
+		}
+	}
+	if cfg.Server.Port == 0 {
+		log.Fatal("server.port is 0")
+	}
+	if cfg.Server.Host == "" {
+		cfg.Server.Host = "0.0.0.0"
+	}
 }
 
-func GetConfGRPC() GRPC {
-	data, err := os.ReadFile("../../../config.yaml")
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	var root Root
-	err = yaml.Unmarshal(data, &root)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	return root.GRPC
-}
+func GetServerConfig() Server { return cfg.Server }
+func GetDbConfig() DB         { return cfg.DB }
+func GetGrpcConfig() GRPC     { return cfg.GRPC }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/config"
@@ -15,6 +16,18 @@ import (
 type Client struct {
 	cc   pkg.RatesServiceClient
 	conn *grpc.ClientConn
+}
+
+func dialAddr() string {
+	if v := os.Getenv("CURRENCY_GRPC_ADDR"); v != "" {
+		return v
+	}
+	conf := config.GetGrpcConfig()
+	server := config.GetServerConfig()
+	if server.Host != "" {
+		return fmt.Sprintf("%v:%v", server.Host, conf.Port)
+	}
+	return fmt.Sprintf("127.0.0.1:%v", conf.Port)
 }
 
 func New(addr string) (*Client, error) {
@@ -52,35 +65,31 @@ func (c *Client) Get(ctx context.Context, code string) (*pkg.GetRateResponse, er
 }
 
 func GetAllRatesHandler() *pkg.CurrencyRates {
-	conf := config.GetConfGRPC()
-	hostString := fmt.Sprintf("localhost:%v", conf.Port)
-	cl, err := New(hostString)
+	cl, err := New(dialAddr())
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer cl.Close()
 	all, err := cl.GetAll(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-	// fmt.Println(all, len(all.ConversionRates))
 	return all
 }
 
 func GetRateHandler(code string) (float64, error) {
-	conf := config.GetConfGRPC()
-	hostString := fmt.Sprintf("localhost:%v", conf.Port)
-	cl, err := New(hostString)
+	cl, err := New(dialAddr())
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer cl.Close()
 	r, err := cl.Get(context.Background(), code)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if r.Found {
 		return r.Value, nil
-	} else {
-		log.Println("not found")
 	}
-	return 0, err
+	log.Println("not found")
+	return 0, nil
 }

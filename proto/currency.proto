@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package currency;
-option go_package = "your/module/path/pkg;pkg";
+option go_package = "github.com/notenoughtea/currency_review/pkg;pkg";
 
 message CurrencyRates {
   uint64 id = 1;

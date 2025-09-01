@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/config"
 	"github.com/notenoughtea/currency_review/gateway/internal/handler"
@@ -14,17 +15,36 @@ func main() {
 	// if err != nil {
 	// 	log.Println("котировка не найдена")
 	// }
-	// fmt.Println(r)
+	// fmt.Pcon
+	config.Load()
+	addr := fmt.Sprintf("%s:%d", config.GetServerConfig().Host, config.GetServerConfig().Port)
 
-	http.HandleFunc("/", handler.HomeHandler)
-	http.HandleFunc("/code/", handler.GetByCodeHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handler.HomeHandler)
+	mux.HandleFunc("/code/", handler.GetByCodeHandler)
 
-	conf := config.GetServerConfig()
-	portString := fmt.Sprintf(":%v", conf.Port)
-	log.Printf("Starting server at port %v", portString)
-	err := http.ListenAndServe(portString, nil)
-	if err != nil {
-		log.Println("Error starting the server:", err)
+	wrap := func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rec := recover(); rec != nil {
+					http.Error(w, "internal error", http.StatusInternalServerError)
+				}
+			}()
+			h.ServeHTTP(w, r)
+		})
+	}
+
+	srv := &http.Server{
+		Addr:         addr,
+		Handler:      wrap(mux),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	log.Printf("listen on %s", addr)
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("server error: %v", err)
 	}
 
 	// тут про логи

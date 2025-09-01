@@ -9,7 +9,7 @@ import (
 )
 
 func GetRatesDaily(ctx context.Context, period time.Duration) {
-	service.HandleRates()
+	service.GetRatesService().HandleRates()
 	t := time.NewTicker(period)
 	defer t.Stop()
 	for {
@@ -18,7 +18,7 @@ func GetRatesDaily(ctx context.Context, period time.Duration) {
 			log.Printf("Отмена периодического запроса курсов")
 			return
 		case <-t.C:
-			service.HandleRates()
+			service.GetRatesService().HandleRates()
 			log.Printf("Обновлен курс, %v", time.Now())
 		}
 	}

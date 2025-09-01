@@ -1,17 +1,75 @@
 services:
   db:
-    image: postgres
-    container_name: psql
+    image: postgres:15
+    container_name: currency_db
     environment:
       POSTGRES_DB: currency_db
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     ports:
       - "5111:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d currency_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   adminer:
     image: adminer
-    container_name: adminer
+    container_name: currency_adminer
     restart: always
     ports:
       - "8080:8080"
+
+  migrator:
+    build: .
+    container_name: currency_migrator
+    command: ["/bin/migrator"]
+    depends_on:
+      - db
+    environment:
+      CONFIG_PATH: /app/config.yaml
+    restart: "no"
+
+  currency:
+    build: .
+    container_name: currency_service
+    command: ["/bin/currency"]
+    depends_on:
+      - db
+      - migrator
+    environment:
+      CONFIG_PATH: /app/config.yaml
+    ports:
+      - "50051:50051"
+
+  cron:
+    build: .
+    container_name: currency_cron
+    command: ["/bin/cron"]
+    depends_on:
+      - db
+      - migrator
+    environment:
+      CONFIG_PATH: /app/config.yaml
+
+  gateway:
+    build: .
+    container_name: currency_gateway
+    command: ["/bin/gateway"]
+    depends_on:
+      - db
+      - currency
+    ports:
+      - target: 8081
+        published: 0
+        protocol: tcp
+        mode: host
+    environment:
+      CONFIG_PATH: /app/config.yaml
+      CURRENCY_GRPC_ADDR: currency:50051
+
+volumes:
+  db_data:

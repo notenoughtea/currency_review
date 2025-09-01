@@ -20,7 +20,8 @@ import (
 )
 
 func main() {
-	conf := config.GetConfGRPC()
+	config.Load()
+	conf := config.GetGrpcConfig()
 	port := fmt.Sprintf(":%d", conf.Port)
 	lis, err := net.Listen(conf.Protocol, port)
 	if err != nil {
@@ -35,15 +36,15 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	go func() {
-		log.Println("Сервер запущен, tcp, :50051")
+	go func(port string) {
+		log.Printf("Сервер Currency(gPRC) запущен, tcp, %s", port)
 		if err := s.Serve(lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
 			grpclog.Errorf("serve error: %v", err)
 		}
-	}()
+	}(port)
 
 	<-ctx.Done()
-	log.Println("Сигнал к отключению, начинаю завершение...")
+	log.Println("Сигнал к отключению, идет остановка сервера")
 
 	done := make(chan struct{})
 	go func() {
@@ -53,12 +54,12 @@ func main() {
 
 	select {
 	case <-done:
-		log.Println("gRPC остановлен")
+		log.Println("Currency(gPRC) остановлен")
 	case <-time.After(10 * time.Second):
-		log.Println("Таймаут graceful, принудительная остановка")
+		log.Println("Выключение по graceful timeout, принудительная остановка")
 		s.Stop()
 	}
 
 	_ = lis.Close()
-	log.Println("Сервер завершён")
+	log.Println("Сервер остановлен")
 }

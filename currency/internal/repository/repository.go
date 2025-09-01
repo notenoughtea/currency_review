@@ -1,7 +1,5 @@
 package repository
 
-package repository
-
 import (
 	"fmt"
 
@@ -20,6 +18,12 @@ type ratesRepository struct {
 
 func NewRatesRepository(db *gorm.DB) RatesRepository {
 	return &ratesRepository{db: db}
+}
+
+func (r *ratesRepository) Migrate(newRates dto.CurrencyRates) error {
+	r.db.AutoMigrate(&dto.CurrencyRates{})
+	fmt.Println("Созданы записи в ДБ:", newRates.BaseCode, len(newRates.ConversionRates), "курсов")
+	return nil
 }
 
 func (r *ratesRepository) StoreRates(newRates dto.CurrencyRates) error {
