@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"log"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
 
 	"github.com/notenoughtea/currency_review/currency/internal/config"
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"github.com/notenoughtea/currency_review/currency/internal/worker"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		log.Println("Запуск сервиса по ежедневному запросу курсов валют")
+		logger.Log.Info("Запуск сервиса по ежедневному запросу курсов валют")
 		worker.GetRatesDaily(ctx, 12*time.Hour)
 	}()
 

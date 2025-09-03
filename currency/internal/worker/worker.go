@@ -2,9 +2,9 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
 
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"github.com/notenoughtea/currency_review/currency/internal/service"
 )
 
@@ -15,11 +15,11 @@ func GetRatesDaily(ctx context.Context, period time.Duration) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Printf("Отмена периодического запроса курсов")
+			logger.Log.Info("Отмена периодического запроса курсов")
 			return
 		case <-t.C:
 			service.GetRatesService().HandleRates()
-			log.Printf("Обновлен курс, %v", time.Now())
+			logger.Log.Infof("Обновлен курс, %v", time.Now())
 		}
 	}
 }

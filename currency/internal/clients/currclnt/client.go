@@ -3,11 +3,11 @@ package currclnt
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/notenoughtea/currency_review/currency/internal/config"
 	"github.com/notenoughtea/currency_review/currency/internal/dto"
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 )
 
 func GetRates() dto.CurrencyRates {
@@ -15,14 +15,14 @@ func GetRates() dto.CurrencyRates {
 	requestString := fmt.Sprintf("https://v6.exchangerate-api.com/v6/%s/latest/USD", token)
 	resp, err := http.Get(requestString)
 	if err != nil {
-		panic(err)
+		logger.Log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
 	var cr dto.CurrencyRates
 	if err := json.NewDecoder(resp.Body).Decode(&cr); err != nil {
-		panic(err)
+		logger.Log.Fatal(err)
 	}
-	log.Println("Получены свежие котировки")
+	logger.Log.Info("Получены свежие котировки")
 	return cr
 }

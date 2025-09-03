@@ -1,21 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/config"
 	"github.com/notenoughtea/currency_review/gateway/internal/handler"
+	"github.com/notenoughtea/currency_review/gateway/internal/logger"
 )
 
 func main() {
-	// r, err := clients.GetRateHandler("EUR")
-	// if err != nil {
-	// 	log.Println("котировка не найдена")
-	// }
-	// fmt.Pcon
+	// включаем логи
+	logger.Init()
+
 	config.Load()
 	addr := fmt.Sprintf("%s:%d", config.GetServerConfig().Host, config.GetServerConfig().Port)
 
@@ -42,21 +44,31 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	log.Printf("listen on %s", addr)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("server error: %v", err)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	defer stop()
+
+	errCh := make(chan error, 1)
+	go func() {
+		logger.Log.Infof("listen on %s", addr)
+		errCh <- srv.ListenAndServe()
+	}()
+
+	select {
+	case <-ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := srv.Shutdown(shutdownCtx); err != nil {
+			logger.Log.Errorf("graceful shutdown failed: %v", err)
+			_ = srv.Close()
+		} else {
+			logger.Log.Infof("server stopped gracefully")
+		}
+	case err := <-errCh:
+		if err != nil && err != http.ErrServerClosed {
+			logger.Log.Fatal("server error:", err)
+		}
 	}
 
-	// тут про логи
-	// file, err := os.OpenFile("../../../logs/logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// logger := slog.New(slog.NewTextHandler(file, &slog.HandlerOptions{
-	// 	Level: slog.LevelInfo,
-	// }))
-	// slog.SetDefault(logger)
-	// slog.Info("Gateway: запущен", "version", "1.0.0")
-	// slog.Warn("Gateway: Предупреждение", "disk", "80%")
-	// slog.Error("Gateway: Ошибка", "code", 500)
+	logger.Log.Info("server exited")
+
 }

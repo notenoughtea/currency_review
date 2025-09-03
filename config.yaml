@@ -11,6 +11,7 @@ DB:
   port: 5432
   sslmode: disable
   TimeZone: UTC
+  Connect_timeout: 10
 GRPC:
   port: 50051
   protocol: tcp

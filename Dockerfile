@@ -19,7 +19,7 @@ RUN go build -o /bin/gateway ./gateway/cmd/gateway
 
 FROM alpine:3.20
 WORKDIR /app
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates netcat-openbsd
 COPY --from=builder /bin/currency /bin/cron /bin/migrator /bin/gateway /bin/
 COPY config.yaml /app/config.yaml
 ENV CONFIG_PATH=/app/config.yaml

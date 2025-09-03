@@ -6,6 +6,7 @@ import (
 	"github.com/notenoughtea/currency_review/currency/internal/clients/currclnt"
 	"github.com/notenoughtea/currency_review/currency/internal/db"
 	"github.com/notenoughtea/currency_review/currency/internal/dto"
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"github.com/notenoughtea/currency_review/currency/internal/migrations"
 	"github.com/notenoughtea/currency_review/currency/internal/repository"
 	"gorm.io/gorm"
@@ -25,7 +26,7 @@ type ratesService struct {
 func GetRatesService() RatesService {
 	dbInst, err := db.Connect()
 	if err != nil {
-		log.Println("Ошибка подключения к базе")
+		logger.Log.Info("Ошибка подключения к базе")
 	}
 	return &ratesService{
 		db:   dbInst,
@@ -35,19 +36,19 @@ func GetRatesService() RatesService {
 
 func (s *ratesService) HandleRates() {
 	if err := migrations.MigrateCurrencyTable(s.db); err != nil {
-		log.Println("Миграция не прошла")
+		logger.Log.Infof("Миграция не прошла")
 		return
 	}
 	newRates := currclnt.GetRates()
 	if err := s.repo.StoreRates(newRates); err != nil {
-		log.Println("Ошибка при получении курсов:", err)
+		logger.Log.Errorf("Ошибка при получении курсов:", err)
 	}
 }
 
 func (s *ratesService) GetAll() *dto.CurrencyRates {
 	rate, err := s.repo.GetLatestRates()
 	if err != nil {
-		log.Println("Ошибка при получении курсов:", err)
+		logger.Log.Errorf("Ошибка при получении курсов:", err)
 		return nil
 	}
 	return rate

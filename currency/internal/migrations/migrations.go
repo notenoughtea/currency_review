@@ -3,8 +3,8 @@ package migrations
 import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/notenoughtea/currency_review/currency/internal/dto"
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"gorm.io/gorm"
-	"log"
 )
 
 func MigrateCurrencyTable(db *gorm.DB) error {
@@ -24,6 +24,6 @@ func MigrateCurrencyTable(db *gorm.DB) error {
 		return err
 	}
 
-	log.Println("Миграции успешно выполнены")
+	logger.Log.Errorf("Миграции успешно выполнены")
 	return nil
 }

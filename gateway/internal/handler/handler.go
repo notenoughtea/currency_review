@@ -3,11 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/clients"
+	"github.com/notenoughtea/currency_review/gateway/internal/logger"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,13 +28,17 @@ func GetByCodeHandler(w http.ResponseWriter, r *http.Request) {
 	rate, err := clients.GetRateHandler(code)
 	if err != nil {
 		fmt.Fprintf(w, "не найдено котировок с кодом: %s\n", code)
-		log.Println(err)
+		logger.Log.Error(err)
 	}
 	if rate != 0 {
 		fmt.Fprintf(w, "Вы запросили курс EUR к %v\n", code)
 		fmt.Fprintf(w, "Ваш курс 1 к %v\n", rate)
+		logger.Log.Infof("Вы запросили курс EUR к %v\n", code)
+		logger.Log.Infof("Ваш курс 1 к %v\n", rate)
 		return
 	}
 	fmt.Fprintf(w, "Вы запросили курс EUR к %v\n", code)
 	fmt.Fprintf(w, "Ваш курс не найден %v\n", rate)
+	logger.Log.Infof("Вы запросили курс EUR к %v\n", code)
+	logger.Log.Infof("Ваш курс не найден %v\n", rate)
 }

@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"fmt"
-
 	"github.com/notenoughtea/currency_review/currency/internal/dto"
+	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"gorm.io/gorm"
 )
 
@@ -22,7 +21,7 @@ func NewRatesRepository(db *gorm.DB) RatesRepository {
 
 func (r *ratesRepository) Migrate(newRates dto.CurrencyRates) error {
 	r.db.AutoMigrate(&dto.CurrencyRates{})
-	fmt.Println("Созданы записи в ДБ:", newRates.BaseCode, len(newRates.ConversionRates), "курсов")
+	logger.Log.Infof("Созданы записи в ДБ: %v, %v %v", newRates.BaseCode, len(newRates.ConversionRates), "курсов")
 	return nil
 }
 
@@ -31,7 +30,7 @@ func (r *ratesRepository) StoreRates(newRates dto.CurrencyRates) error {
 	if err := r.db.Create(&newRates).Error; err != nil {
 		return err
 	}
-	fmt.Println("Созданы записи в ДБ:", newRates.BaseCode, len(newRates.ConversionRates), "курсов")
+	logger.Log.Infof("Созданы записи в ДБ: %v, %v %v", newRates.BaseCode, len(newRates.ConversionRates), "курсов")
 	return nil
 }
 

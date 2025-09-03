@@ -3,11 +3,11 @@ package clients
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/config"
+	"github.com/notenoughtea/currency_review/gateway/internal/logger"
 	"github.com/notenoughtea/currency_review/pkg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,7 +31,7 @@ func dialAddr() string {
 }
 
 func New(addr string) (*Client, error) {
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	conn, err := grpc.NewClient(
@@ -53,13 +53,13 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) GetAll(ctx context.Context) (*pkg.CurrencyRates, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	return c.cc.GetAllRates(ctx, &pkg.Empty{})
 }
 
 func (c *Client) Get(ctx context.Context, code string) (*pkg.GetRateResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	return c.cc.GetRate(ctx, &pkg.GetRateRequest{Code: code})
 }
@@ -67,12 +67,12 @@ func (c *Client) Get(ctx context.Context, code string) (*pkg.GetRateResponse, er
 func GetAllRatesHandler() *pkg.CurrencyRates {
 	cl, err := New(dialAddr())
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err)
 	}
 	defer cl.Close()
 	all, err := cl.GetAll(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err)
 	}
 	return all
 }
@@ -80,16 +80,16 @@ func GetAllRatesHandler() *pkg.CurrencyRates {
 func GetRateHandler(code string) (float64, error) {
 	cl, err := New(dialAddr())
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err)
 	}
 	defer cl.Close()
 	r, err := cl.Get(context.Background(), code)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Fatal(err)
 	}
 	if r.Found {
 		return r.Value, nil
 	}
-	log.Println("not found")
+	logger.Log.Info("not found")
 	return 0, nil
 }

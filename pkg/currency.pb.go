@@ -318,7 +318,7 @@ const file_currency_proto_rawDesc = "" +
 	"\x05Empty2\x87\x01\n" +
 	"\fRatesService\x12>\n" +
 	"\aGetRate\x12\x18.currency.GetRateRequest\x1a\x19.currency.GetRateResponse\x127\n" +
-	"\vGetAllRates\x12\x0f.currency.Empty\x1a\x17.currency.CurrencyRatesB\x1aZ\x18your/module/path/pkg;pkgb\x06proto3"
+	"\vGetAllRates\x12\x0f.currency.Empty\x1a\x17.currency.CurrencyRatesB1Z/github.com/notenoughtea/currency_review/pkg;pkgb\x06proto3"
 
 var (
 	file_currency_proto_rawDescOnce sync.Once
