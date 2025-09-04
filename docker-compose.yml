@@ -100,6 +100,27 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
 
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: loki
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    container_name: promtail
+    command: ["-config.file=/etc/promtail/config.yaml"]
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail/config.yaml:/etc/promtail/config.yaml:ro
+    depends_on:
+      - loki
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -120,3 +141,4 @@ volumes:
   db_data:
   grafana_data:
   prometheus_data:
+  loki_data:
