@@ -41,14 +41,14 @@ func (s *ratesService) HandleRates() {
 	}
 	newRates := currclnt.GetRates()
 	if err := s.repo.StoreRates(newRates); err != nil {
-		logger.Log.Errorf("Ошибка при получении курсов:", err)
+		logger.Log.Errorf("Ошибка при получении курсов: %v", err)
 	}
 }
 
 func (s *ratesService) GetAll() *dto.CurrencyRates {
 	rate, err := s.repo.GetLatestRates()
 	if err != nil {
-		logger.Log.Errorf("Ошибка при получении курсов:", err)
+		logger.Log.Errorf("Ошибка при получении курсов: %v", err)
 		return nil
 	}
 	return rate

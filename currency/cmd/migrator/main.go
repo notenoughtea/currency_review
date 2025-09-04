@@ -11,13 +11,13 @@ func main() {
 	config.Load()
 	conn, err := db.Connect()
 	if err != nil {
-		logger.Log.Fatalf("Ошибка подключения к базе: ", err)
+		logger.Log.Fatalf("Ошибка подключения к базе: %v", err)
 	}
 
 	if err := conn.AutoMigrate(
 		&dto.CurrencyRates{},
 	); err != nil {
-		logger.Log.Fatalf("Ошибка миграции:", err)
+		logger.Log.Fatalf("Ошибка миграции: %v", err)
 	}
 
 	logger.Log.Info("Миграции успешно выполнены")
