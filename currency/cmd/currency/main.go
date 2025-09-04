@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +16,9 @@ import (
 	"github.com/notenoughtea/currency_review/currency/internal/logger"
 	"github.com/notenoughtea/currency_review/currency/internal/service"
 	"github.com/notenoughtea/currency_review/pkg"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
@@ -35,6 +39,25 @@ func main() {
 	s := grpc.NewServer()
 	svc := service.GetRatesService()
 	pkg.RegisterRatesServiceServer(s, handler.NewRatesHandler(svc))
+
+	// metrics endpoint for currency service
+	register := func(c prometheus.Collector) {
+		if err := prometheus.DefaultRegisterer.Register(c); err != nil {
+			if _, ok := err.(prometheus.AlreadyRegisteredError); ok {
+				return
+			}
+		}
+	}
+	register(collectors.NewBuildInfoCollector())
+	register(collectors.NewGoCollector())
+	register(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", promhttp.Handler())
+		addr := ":2112"
+		logger.Log.Infof("Currency metrics HTTP on %s", addr)
+		_ = http.ListenAndServe(addr, mux)
+	}()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

@@ -1,0 +1,56 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "title": "API Overview",
+  "tags": ["currency", "gateway"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Gateway p95 latency",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, method, path) (rate(gateway_http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{method}} {{path}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Gateway error rate",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "sum(rate(gateway_http_requests_total{status=~\"5..\"}[5m])) / sum(rate(gateway_http_requests_total[5m]))",
+          "legendFormat": "5xx ratio"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "External client latency (avg)",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "rate(currency_external_client_request_duration_seconds_sum[5m]) / rate(currency_external_client_request_duration_seconds_count[5m])",
+          "legendFormat": "avg {{endpoint}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "External client errors",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "sum(rate(currency_external_client_requests_total{code!=\"200\"}[5m])) by (endpoint, code)",
+          "legendFormat": "{{endpoint}} {{code}}"
+        }
+      ]
+    }
+  ]
+}
+
