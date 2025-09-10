@@ -15,3 +15,5 @@ DB:
 GRPC:
   port: 50051
   protocol: tcp
+auth:
+  base_url: http://auth-generator:8080

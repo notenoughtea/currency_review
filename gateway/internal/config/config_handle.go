@@ -18,10 +18,15 @@ type GRPC struct {
 	Protocol string `yaml:"protocol"`
 }
 
+type AuthConfig struct {
+	BaseURL string `yaml:"base_url"`
+}
+
 type Root struct {
-	Server           Server `yaml:"server"`
-	CurrencyOuterKey string `yaml:"CURRENCY_OUTER_KEY"`
-	GRPC             GRPC   `yaml:"GRPC"`
+	Server           Server     `yaml:"server"`
+	CurrencyOuterKey string     `yaml:"CURRENCY_OUTER_KEY"`
+	GRPC             GRPC       `yaml:"GRPC"`
+	Auth             AuthConfig `yaml:"auth"`
 }
 
 var cfg Root
@@ -51,5 +56,6 @@ func Load() {
 	}
 }
 
-func GetServerConfig() Server { return cfg.Server }
-func GetGrpcConfig() GRPC     { return cfg.GRPC }
+func GetServerConfig() Server   { return cfg.Server }
+func GetGrpcConfig() GRPC       { return cfg.GRPC }
+func GetAuthConfig() AuthConfig { return cfg.Auth }

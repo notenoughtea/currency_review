@@ -9,15 +9,27 @@ import (
 var Log = logrus.New()
 
 func Init() {
-	file, err := os.OpenFile("logs/logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		Log.SetOutput(file)
-	} else {
-		Log.SetOutput(os.Stdout)
-	}
+
+	Log.SetOutput(os.Stdout)
 
 	Log.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+		DisableColors:   false,
 	})
-	Log.SetLevel(logrus.InfoLevel)
+
+	level := os.Getenv("LOG_LEVEL")
+	if level == "" {
+		level = "info"
+	}
+
+	logLevel, err := logrus.ParseLevel(level)
+	if err != nil {
+		Log.SetLevel(logrus.InfoLevel)
+		Log.Warnf("Invalid log level '%s', using 'info'", level)
+	} else {
+		Log.SetLevel(logLevel)
+	}
+
+	Log.Infof("Logger initialized with level: %s", Log.GetLevel())
 }

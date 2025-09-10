@@ -16,13 +16,23 @@ services:
       timeout: 3s
       retries: 20
       start_period: 10s
-
-  adminer:
-    image: adminer
-    container_name: currency_adminer
-    restart: always
+  auth-generator:
+    image: artyomyatsenko/final-task-auth-generator:latest
     ports:
-      - "8080:8080"
+      - "8082:8082"
+    environment:
+      AUTH_TOKEN_LIFETIME: 3600
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+  # adminer:
+  #   image: adminer
+  #   container_name: currency_adminer
+  #   restart: always
+  #   ports:
+  #     - "8080:8080"
 
   migrator:
     build: .
