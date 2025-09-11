@@ -15,11 +15,12 @@ RUN protoc -I proto \
 RUN go build -o /bin/currency ./currency/cmd/currency
 RUN go build -o /bin/cron ./currency/cmd/cron
 RUN go build -o /bin/migrator ./currency/cmd/migrator
+RUN go build -o /bin/seed ./currency/cmd/seed
 RUN go build -o /bin/gateway ./gateway/cmd/gateway
 
 FROM alpine:3.20
 WORKDIR /app
 RUN apk add --no-cache ca-certificates netcat-openbsd
-COPY --from=builder /bin/currency /bin/cron /bin/migrator /bin/gateway /bin/
+COPY --from=builder /bin/currency /bin/cron /bin/migrator /bin/seed /bin/gateway /bin/
 COPY config.yaml /app/config.yaml
 ENV CONFIG_PATH=/app/config.yaml

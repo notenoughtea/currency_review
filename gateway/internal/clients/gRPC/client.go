@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/notenoughtea/currency_review/gateway/internal/config"
+	"github.com/notenoughtea/currency_review/gateway/internal/dto"
 	"github.com/notenoughtea/currency_review/gateway/internal/logger"
 	"github.com/notenoughtea/currency_review/pkg"
 	"google.golang.org/grpc"
@@ -58,10 +59,13 @@ func (c *Client) GetAll(ctx context.Context) (*pkg.CurrencyRates, error) {
 	return c.cc.GetAllRates(ctx, &pkg.Empty{})
 }
 
-func (c *Client) Get(ctx context.Context, code string) (*pkg.GetRateResponse, error) {
+func (c *Client) GetByDates(ctx context.Context, req *dto.ParsedCurrencyRequest) (*pkg.CurrencyRatesList, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	return c.cc.GetRate(ctx, &pkg.GetRateRequest{Code: code})
+	return c.cc.GetRatesByDates(ctx, &pkg.CurrencyRequest{
+		DateFrom: req.DateFrom.Format("2006-01-02"),
+		DateTo:   req.DateTo.Format("2006-01-02"),
+	})
 }
 
 func GetAllRatesHandler() *pkg.CurrencyRates {
@@ -77,19 +81,48 @@ func GetAllRatesHandler() *pkg.CurrencyRates {
 	return all
 }
 
-func GetRateHandler(code string) (float64, error) {
+type CurrencyRate struct {
+	Date time.Time
+	Rate float32
+}
+
+func parseDate(s string) (time.Time, error) {
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return t, nil
+	}
+	return time.Parse("2006-01-02", s)
+}
+
+func GetRatesByDates(req *dto.ParsedCurrencyRequest) ([]CurrencyRate, error) {
 	cl, err := New(dialAddr())
 	if err != nil {
-		logger.Log.Fatal(err)
+		return nil, err
 	}
 	defer cl.Close()
-	r, err := cl.Get(context.Background(), code)
+
+	resp, err := cl.GetByDates(context.Background(), req)
 	if err != nil {
-		logger.Log.Fatal(err)
+		return nil, err
 	}
-	if r.Found {
-		return r.Value, nil
+
+	if len(resp.Items) == 0 {
+		logger.Log.Info("not found")
+		return nil, nil
 	}
-	logger.Log.Info("not found")
-	return 0, nil
+
+	var result []CurrencyRate
+	for _, item := range resp.Items {
+		for _, r := range item.Rates {
+			t, err := parseDate(r.Date)
+			if err != nil {
+				return nil, err
+			}
+			result = append(result, CurrencyRate{
+				Date: t,
+				Rate: r.Rate,
+			})
+		}
+	}
+
+	return result, nil
 }

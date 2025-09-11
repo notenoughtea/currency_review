@@ -24,7 +24,6 @@ import (
 )
 
 func main() {
-	// включаем логи
 	logger.Init()
 
 	config.Load()
@@ -32,7 +31,7 @@ func main() {
 	port := fmt.Sprintf(":%d", conf.Port)
 	lis, err := net.Listen(conf.Protocol, port)
 	if err != nil {
-		fmt.Println(err)
+		logger.Log.Info(err)
 		logger.Log.Fatal(err)
 	}
 

@@ -19,15 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RatesService_GetRate_FullMethodName     = "/currency.RatesService/GetRate"
-	RatesService_GetAllRates_FullMethodName = "/currency.RatesService/GetAllRates"
+	RatesService_GetRatesByDates_FullMethodName = "/pkg.RatesService/GetRatesByDates"
+	RatesService_GetAllRates_FullMethodName     = "/pkg.RatesService/GetAllRates"
 )
 
 // RatesServiceClient is the client API for RatesService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RatesServiceClient interface {
-	GetRate(ctx context.Context, in *GetRateRequest, opts ...grpc.CallOption) (*GetRateResponse, error)
+	GetRatesByDates(ctx context.Context, in *CurrencyRequest, opts ...grpc.CallOption) (*CurrencyRatesList, error)
 	GetAllRates(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CurrencyRates, error)
 }
 
@@ -39,10 +39,10 @@ func NewRatesServiceClient(cc grpc.ClientConnInterface) RatesServiceClient {
 	return &ratesServiceClient{cc}
 }
 
-func (c *ratesServiceClient) GetRate(ctx context.Context, in *GetRateRequest, opts ...grpc.CallOption) (*GetRateResponse, error) {
+func (c *ratesServiceClient) GetRatesByDates(ctx context.Context, in *CurrencyRequest, opts ...grpc.CallOption) (*CurrencyRatesList, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetRateResponse)
-	err := c.cc.Invoke(ctx, RatesService_GetRate_FullMethodName, in, out, cOpts...)
+	out := new(CurrencyRatesList)
+	err := c.cc.Invoke(ctx, RatesService_GetRatesByDates_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (c *ratesServiceClient) GetAllRates(ctx context.Context, in *Empty, opts ..
 // All implementations must embed UnimplementedRatesServiceServer
 // for forward compatibility.
 type RatesServiceServer interface {
-	GetRate(context.Context, *GetRateRequest) (*GetRateResponse, error)
+	GetRatesByDates(context.Context, *CurrencyRequest) (*CurrencyRatesList, error)
 	GetAllRates(context.Context, *Empty) (*CurrencyRates, error)
 	mustEmbedUnimplementedRatesServiceServer()
 }
@@ -75,8 +75,8 @@ type RatesServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRatesServiceServer struct{}
 
-func (UnimplementedRatesServiceServer) GetRate(context.Context, *GetRateRequest) (*GetRateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetRate not implemented")
+func (UnimplementedRatesServiceServer) GetRatesByDates(context.Context, *CurrencyRequest) (*CurrencyRatesList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRatesByDates not implemented")
 }
 func (UnimplementedRatesServiceServer) GetAllRates(context.Context, *Empty) (*CurrencyRates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllRates not implemented")
@@ -102,20 +102,20 @@ func RegisterRatesServiceServer(s grpc.ServiceRegistrar, srv RatesServiceServer)
 	s.RegisterService(&RatesService_ServiceDesc, srv)
 }
 
-func _RatesService_GetRate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRateRequest)
+func _RatesService_GetRatesByDates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CurrencyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RatesServiceServer).GetRate(ctx, in)
+		return srv.(RatesServiceServer).GetRatesByDates(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RatesService_GetRate_FullMethodName,
+		FullMethod: RatesService_GetRatesByDates_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RatesServiceServer).GetRate(ctx, req.(*GetRateRequest))
+		return srv.(RatesServiceServer).GetRatesByDates(ctx, req.(*CurrencyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -142,12 +142,12 @@ func _RatesService_GetAllRates_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RatesService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "currency.RatesService",
+	ServiceName: "pkg.RatesService",
 	HandlerType: (*RatesServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetRate",
-			Handler:    _RatesService_GetRate_Handler,
+			MethodName: "GetRatesByDates",
+			Handler:    _RatesService_GetRatesByDates_Handler,
 		},
 		{
 			MethodName: "GetAllRates",

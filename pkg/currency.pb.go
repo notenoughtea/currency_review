@@ -21,27 +21,121 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type CurrencyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DateFrom      string                 `protobuf:"bytes,1,opt,name=date_from,json=dateFrom,proto3" json:"date_from,omitempty"`
+	DateTo        string                 `protobuf:"bytes,2,opt,name=date_to,json=dateTo,proto3" json:"date_to,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CurrencyRequest) Reset() {
+	*x = CurrencyRequest{}
+	mi := &file_currency_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CurrencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CurrencyRequest) ProtoMessage() {}
+
+func (x *CurrencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_currency_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CurrencyRequest.ProtoReflect.Descriptor instead.
+func (*CurrencyRequest) Descriptor() ([]byte, []int) {
+	return file_currency_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *CurrencyRequest) GetDateFrom() string {
+	if x != nil {
+		return x.DateFrom
+	}
+	return ""
+}
+
+func (x *CurrencyRequest) GetDateTo() string {
+	if x != nil {
+		return x.DateTo
+	}
+	return ""
+}
+
+type Rate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
+	Rate          float32                `protobuf:"fixed32,2,opt,name=rate,proto3" json:"rate,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Rate) Reset() {
+	*x = Rate{}
+	mi := &file_currency_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Rate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rate) ProtoMessage() {}
+
+func (x *Rate) ProtoReflect() protoreflect.Message {
+	mi := &file_currency_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Rate.ProtoReflect.Descriptor instead.
+func (*Rate) Descriptor() ([]byte, []int) {
+	return file_currency_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Rate) GetDate() string {
+	if x != nil {
+		return x.Date
+	}
+	return ""
+}
+
+func (x *Rate) GetRate() float32 {
+	if x != nil {
+		return x.Rate
+	}
+	return 0
+}
+
 type CurrencyRates struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	Id                 uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Result             string                 `protobuf:"bytes,2,opt,name=result,proto3" json:"result,omitempty"`
-	Documentation      string                 `protobuf:"bytes,3,opt,name=documentation,proto3" json:"documentation,omitempty"`
-	TermsOfUse         string                 `protobuf:"bytes,4,opt,name=terms_of_use,json=termsOfUse,proto3" json:"terms_of_use,omitempty"`
-	TimeLastUpdateUnix int64                  `protobuf:"varint,5,opt,name=time_last_update_unix,json=timeLastUpdateUnix,proto3" json:"time_last_update_unix,omitempty"`
-	TimeLastUpdateUtc  string                 `protobuf:"bytes,6,opt,name=time_last_update_utc,json=timeLastUpdateUtc,proto3" json:"time_last_update_utc,omitempty"`
-	TimeNextUpdateUnix int64                  `protobuf:"varint,7,opt,name=time_next_update_unix,json=timeNextUpdateUnix,proto3" json:"time_next_update_unix,omitempty"`
-	TimeNextUpdateUtc  string                 `protobuf:"bytes,8,opt,name=time_next_update_utc,json=timeNextUpdateUtc,proto3" json:"time_next_update_utc,omitempty"`
-	BaseCode           string                 `protobuf:"bytes,9,opt,name=base_code,json=baseCode,proto3" json:"base_code,omitempty"`
-	ConversionRates    map[string]float64     `protobuf:"bytes,10,rep,name=conversion_rates,json=conversionRates,proto3" json:"conversion_rates,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"fixed64,2,opt,name=value"`
-	CreatedAt          int64                  `protobuf:"varint,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt          int64                  `protobuf:"varint,12,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Currency      string                 `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	Rates         []*Rate                `protobuf:"bytes,2,rep,name=rates,proto3" json:"rates,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CurrencyRates) Reset() {
 	*x = CurrencyRates{}
-	mi := &file_currency_proto_msgTypes[0]
+	mi := &file_currency_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -53,7 +147,7 @@ func (x *CurrencyRates) String() string {
 func (*CurrencyRates) ProtoMessage() {}
 
 func (x *CurrencyRates) ProtoReflect() protoreflect.Message {
-	mi := &file_currency_proto_msgTypes[0]
+	mi := &file_currency_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,115 +160,45 @@ func (x *CurrencyRates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CurrencyRates.ProtoReflect.Descriptor instead.
 func (*CurrencyRates) Descriptor() ([]byte, []int) {
-	return file_currency_proto_rawDescGZIP(), []int{0}
+	return file_currency_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CurrencyRates) GetId() uint64 {
+func (x *CurrencyRates) GetCurrency() string {
 	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *CurrencyRates) GetResult() string {
-	if x != nil {
-		return x.Result
+		return x.Currency
 	}
 	return ""
 }
 
-func (x *CurrencyRates) GetDocumentation() string {
+func (x *CurrencyRates) GetRates() []*Rate {
 	if x != nil {
-		return x.Documentation
-	}
-	return ""
-}
-
-func (x *CurrencyRates) GetTermsOfUse() string {
-	if x != nil {
-		return x.TermsOfUse
-	}
-	return ""
-}
-
-func (x *CurrencyRates) GetTimeLastUpdateUnix() int64 {
-	if x != nil {
-		return x.TimeLastUpdateUnix
-	}
-	return 0
-}
-
-func (x *CurrencyRates) GetTimeLastUpdateUtc() string {
-	if x != nil {
-		return x.TimeLastUpdateUtc
-	}
-	return ""
-}
-
-func (x *CurrencyRates) GetTimeNextUpdateUnix() int64 {
-	if x != nil {
-		return x.TimeNextUpdateUnix
-	}
-	return 0
-}
-
-func (x *CurrencyRates) GetTimeNextUpdateUtc() string {
-	if x != nil {
-		return x.TimeNextUpdateUtc
-	}
-	return ""
-}
-
-func (x *CurrencyRates) GetBaseCode() string {
-	if x != nil {
-		return x.BaseCode
-	}
-	return ""
-}
-
-func (x *CurrencyRates) GetConversionRates() map[string]float64 {
-	if x != nil {
-		return x.ConversionRates
+		return x.Rates
 	}
 	return nil
 }
 
-func (x *CurrencyRates) GetCreatedAt() int64 {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return 0
-}
-
-func (x *CurrencyRates) GetUpdatedAt() int64 {
-	if x != nil {
-		return x.UpdatedAt
-	}
-	return 0
-}
-
-type GetRateRequest struct {
+type CurrencyRatesList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Items         []*CurrencyRates       `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetRateRequest) Reset() {
-	*x = GetRateRequest{}
-	mi := &file_currency_proto_msgTypes[1]
+func (x *CurrencyRatesList) Reset() {
+	*x = CurrencyRatesList{}
+	mi := &file_currency_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetRateRequest) String() string {
+func (x *CurrencyRatesList) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetRateRequest) ProtoMessage() {}
+func (*CurrencyRatesList) ProtoMessage() {}
 
-func (x *GetRateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_currency_proto_msgTypes[1]
+func (x *CurrencyRatesList) ProtoReflect() protoreflect.Message {
+	mi := &file_currency_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -185,68 +209,16 @@ func (x *GetRateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetRateRequest.ProtoReflect.Descriptor instead.
-func (*GetRateRequest) Descriptor() ([]byte, []int) {
-	return file_currency_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use CurrencyRatesList.ProtoReflect.Descriptor instead.
+func (*CurrencyRatesList) Descriptor() ([]byte, []int) {
+	return file_currency_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetRateRequest) GetCode() string {
+func (x *CurrencyRatesList) GetItems() []*CurrencyRates {
 	if x != nil {
-		return x.Code
+		return x.Items
 	}
-	return ""
-}
-
-type GetRateResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         float64                `protobuf:"fixed64,1,opt,name=value,proto3" json:"value,omitempty"`
-	Found         bool                   `protobuf:"varint,2,opt,name=found,proto3" json:"found,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetRateResponse) Reset() {
-	*x = GetRateResponse{}
-	mi := &file_currency_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetRateResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetRateResponse) ProtoMessage() {}
-
-func (x *GetRateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_currency_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetRateResponse.ProtoReflect.Descriptor instead.
-func (*GetRateResponse) Descriptor() ([]byte, []int) {
-	return file_currency_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *GetRateResponse) GetValue() float64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
-}
-
-func (x *GetRateResponse) GetFound() bool {
-	if x != nil {
-		return x.Found
-	}
-	return false
+	return nil
 }
 
 type Empty struct {
@@ -257,7 +229,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_currency_proto_msgTypes[3]
+	mi := &file_currency_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -269,7 +241,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_currency_proto_msgTypes[3]
+	mi := &file_currency_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,43 +254,30 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_currency_proto_rawDescGZIP(), []int{3}
+	return file_currency_proto_rawDescGZIP(), []int{4}
 }
 
 var File_currency_proto protoreflect.FileDescriptor
 
 const file_currency_proto_rawDesc = "" +
 	"\n" +
-	"\x0ecurrency.proto\x12\bcurrency\"\xbf\x04\n" +
-	"\rCurrencyRates\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12\x16\n" +
-	"\x06result\x18\x02 \x01(\tR\x06result\x12$\n" +
-	"\rdocumentation\x18\x03 \x01(\tR\rdocumentation\x12 \n" +
-	"\fterms_of_use\x18\x04 \x01(\tR\n" +
-	"termsOfUse\x121\n" +
-	"\x15time_last_update_unix\x18\x05 \x01(\x03R\x12timeLastUpdateUnix\x12/\n" +
-	"\x14time_last_update_utc\x18\x06 \x01(\tR\x11timeLastUpdateUtc\x121\n" +
-	"\x15time_next_update_unix\x18\a \x01(\x03R\x12timeNextUpdateUnix\x12/\n" +
-	"\x14time_next_update_utc\x18\b \x01(\tR\x11timeNextUpdateUtc\x12\x1b\n" +
-	"\tbase_code\x18\t \x01(\tR\bbaseCode\x12W\n" +
-	"\x10conversion_rates\x18\n" +
-	" \x03(\v2,.currency.CurrencyRates.ConversionRatesEntryR\x0fconversionRates\x12\x1d\n" +
-	"\n" +
-	"created_at\x18\v \x01(\x03R\tcreatedAt\x12\x1d\n" +
-	"\n" +
-	"updated_at\x18\f \x01(\x03R\tupdatedAt\x1aB\n" +
-	"\x14ConversionRatesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x01R\x05value:\x028\x01\"$\n" +
-	"\x0eGetRateRequest\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\tR\x04code\"=\n" +
-	"\x0fGetRateResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x01R\x05value\x12\x14\n" +
-	"\x05found\x18\x02 \x01(\bR\x05found\"\a\n" +
-	"\x05Empty2\x87\x01\n" +
-	"\fRatesService\x12>\n" +
-	"\aGetRate\x12\x18.currency.GetRateRequest\x1a\x19.currency.GetRateResponse\x127\n" +
-	"\vGetAllRates\x12\x0f.currency.Empty\x1a\x17.currency.CurrencyRatesB1Z/github.com/notenoughtea/currency_review/pkg;pkgb\x06proto3"
+	"\x0ecurrency.proto\x12\x03pkg\"G\n" +
+	"\x0fCurrencyRequest\x12\x1b\n" +
+	"\tdate_from\x18\x01 \x01(\tR\bdateFrom\x12\x17\n" +
+	"\adate_to\x18\x02 \x01(\tR\x06dateTo\".\n" +
+	"\x04Rate\x12\x12\n" +
+	"\x04date\x18\x01 \x01(\tR\x04date\x12\x12\n" +
+	"\x04rate\x18\x02 \x01(\x02R\x04rate\"L\n" +
+	"\rCurrencyRates\x12\x1a\n" +
+	"\bcurrency\x18\x01 \x01(\tR\bcurrency\x12\x1f\n" +
+	"\x05rates\x18\x02 \x03(\v2\t.pkg.RateR\x05rates\"=\n" +
+	"\x11CurrencyRatesList\x12(\n" +
+	"\x05items\x18\x01 \x03(\v2\x12.pkg.CurrencyRatesR\x05items\"\a\n" +
+	"\x05Empty2~\n" +
+	"\fRatesService\x12?\n" +
+	"\x0fGetRatesByDates\x12\x14.pkg.CurrencyRequest\x1a\x16.pkg.CurrencyRatesList\x12-\n" +
+	"\vGetAllRates\x12\n" +
+	".pkg.Empty\x1a\x12.pkg.CurrencyRatesB\x1aZ\x18your/module/path/pkg;pkgb\x06proto3"
 
 var (
 	file_currency_proto_rawDescOnce sync.Once
@@ -334,23 +293,24 @@ func file_currency_proto_rawDescGZIP() []byte {
 
 var file_currency_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_currency_proto_goTypes = []any{
-	(*CurrencyRates)(nil),   // 0: currency.CurrencyRates
-	(*GetRateRequest)(nil),  // 1: currency.GetRateRequest
-	(*GetRateResponse)(nil), // 2: currency.GetRateResponse
-	(*Empty)(nil),           // 3: currency.Empty
-	nil,                     // 4: currency.CurrencyRates.ConversionRatesEntry
+	(*CurrencyRequest)(nil),   // 0: pkg.CurrencyRequest
+	(*Rate)(nil),              // 1: pkg.Rate
+	(*CurrencyRates)(nil),     // 2: pkg.CurrencyRates
+	(*CurrencyRatesList)(nil), // 3: pkg.CurrencyRatesList
+	(*Empty)(nil),             // 4: pkg.Empty
 }
 var file_currency_proto_depIdxs = []int32{
-	4, // 0: currency.CurrencyRates.conversion_rates:type_name -> currency.CurrencyRates.ConversionRatesEntry
-	1, // 1: currency.RatesService.GetRate:input_type -> currency.GetRateRequest
-	3, // 2: currency.RatesService.GetAllRates:input_type -> currency.Empty
-	2, // 3: currency.RatesService.GetRate:output_type -> currency.GetRateResponse
-	0, // 4: currency.RatesService.GetAllRates:output_type -> currency.CurrencyRates
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1, // 0: pkg.CurrencyRates.rates:type_name -> pkg.Rate
+	2, // 1: pkg.CurrencyRatesList.items:type_name -> pkg.CurrencyRates
+	0, // 2: pkg.RatesService.GetRatesByDates:input_type -> pkg.CurrencyRequest
+	4, // 3: pkg.RatesService.GetAllRates:input_type -> pkg.Empty
+	3, // 4: pkg.RatesService.GetRatesByDates:output_type -> pkg.CurrencyRatesList
+	2, // 5: pkg.RatesService.GetAllRates:output_type -> pkg.CurrencyRates
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_currency_proto_init() }

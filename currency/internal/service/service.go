@@ -1,8 +1,6 @@
 package service
 
 import (
-	"log"
-
 	"github.com/notenoughtea/currency_review/currency/internal/clients/currclnt"
 	"github.com/notenoughtea/currency_review/currency/internal/db"
 	"github.com/notenoughtea/currency_review/currency/internal/dto"
@@ -14,7 +12,6 @@ import (
 
 type RatesService interface {
 	GetAll() *dto.CurrencyRates
-	Get(code string) (float64, bool)
 	HandleRates()
 }
 
@@ -54,11 +51,11 @@ func (s *ratesService) GetAll() *dto.CurrencyRates {
 	return rate
 }
 
-func (s *ratesService) Get(code string) (float64, bool) {
-	rate, err := s.repo.GetLatestRates()
+func (s *ratesService) GetByDates(req *dto.CurrencyRequest) *[]dto.CurrencyRates {
+	rate, err := s.repo.GetRatesByDates(req)
 	if err != nil {
-		log.Println("Ошибка при получении курсов:", err)
-		return 0, false
+		logger.Log.Errorf("Ошибка при получении курсов: %v", err)
+		return nil
 	}
-	return rate.GetRate(code)
+	return rate
 }

@@ -18,6 +18,7 @@ func RegisterRoutes(authSvc service.AuthServiceInterface, currencySvc service.Cu
 	cntrl := controller{authService: authSvc, currencyService: currencySvc, logger: log}
 	mux.HandleFunc("/ping", cntrl.ping)
 	mux.HandleFunc("/api/v1/rate", cntrl.GetCurrencyRates)
+	mux.HandleFunc("/api/v1/rate_by_date", cntrl.GetRatesByDates)
 	mux.HandleFunc("/api/v1/login", cntrl.Login)
 	mux.HandleFunc("/api/v1/register", cntrl.Register)
 	mux.HandleFunc("/api/v1/logout", cntrl.Logout)

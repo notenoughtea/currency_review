@@ -30,10 +30,11 @@ type GRPC struct {
 }
 
 type Root struct {
-	Server           Server `yaml:"server"`
-	CurrencyOuterKey string `yaml:"CURRENCY_OUTER_KEY"`
-	DB               DB     `yaml:"DB"`
-	GRPC             GRPC   `yaml:"GRPC"`
+	DefaultBaseCurrency string `yaml:"DefaultBaseCurrency"`
+	OuterCurrencyURL    string `yaml:"outer_currency_url"`
+	Server              Server `yaml:"server"`
+	DB                  DB     `yaml:"DB"`
+	GRPC                GRPC   `yaml:"GRPC"`
 }
 
 var cfg Root
@@ -63,7 +64,8 @@ func Load() {
 	}
 }
 
-func GetServerConfig() Server { return cfg.Server }
-func GetDbConfig() DB         { return cfg.DB }
-func GetGrpcConfig() GRPC     { return cfg.GRPC }
-func GetToken() string        { return cfg.CurrencyOuterKey }
+func GetServerConfig() Server        { return cfg.Server }
+func GetDbConfig() DB                { return cfg.DB }
+func GetGrpcConfig() GRPC            { return cfg.GRPC }
+func GetOuterUrl() string            { return cfg.OuterCurrencyURL }
+func GetDefaultBaseCurrency() string { return cfg.DefaultBaseCurrency }

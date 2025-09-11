@@ -72,3 +72,30 @@ func (mr *MockRatesRepositoryMockRecorder) GetLatestRates() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestRates", reflect.TypeOf((*MockRatesRepository)(nil).GetLatestRates))
 }
+
+func (m *MockRatesRepository) GetRatesByDates(req *dto.CurrencyRequest) (*[]dto.CurrencyRates, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRatesByDates", req)
+	var r0 *[]dto.CurrencyRates
+	var r1 error
+	if rf, ok := ret[0].(func(*dto.CurrencyRequest) *[]dto.CurrencyRates); ok {
+		r0 = rf(req)
+	} else {
+		if ret[0] != nil {
+			r0 = ret[0].(*[]dto.CurrencyRates)
+		}
+	}
+	if rf, ok := ret[1].(func() error); ok {
+		r1 = rf()
+	} else {
+		if ret[1] != nil {
+			r1 = ret[1].(error)
+		}
+	}
+	return r0, r1
+}
+
+func (mr *MockRatesRepositoryMockRecorder) GetRatesByDates(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRatesByDates", reflect.TypeOf((*MockRatesRepository)(nil).GetRatesByDates), req)
+}

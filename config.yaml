@@ -1,8 +1,9 @@
 ---
+DefaultBaseCurrency: USD
+outer_currency_url: https://latest.currency-api.pages.dev/v1/currencies/rub.json
 server:
   port: 8081
   host: 0.0.0.0
-CURRENCY_OUTER_KEY: c4d463b3224d9b77380e7e13
 DB:
   host: db
   user: admin
