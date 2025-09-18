@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/notenoughtea/currency_review/currency/internal/config"
@@ -10,6 +11,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+var registerDbMetricsOnce sync.Once
 
 func Connect() (*gorm.DB, error) {
 	cfg := config.GetDbConfig()
@@ -30,29 +33,30 @@ func Connect() (*gorm.DB, error) {
 				stats := func() *gorm.DB {
 					return db
 				}
-				// export DB pool stats
-				prometheus.MustRegister(
-					prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "open_connections", Help: "DB open connections"}, func() float64 {
-						s, _ := stats().DB()
-						return float64(s.Stats().OpenConnections)
-					}),
-					prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "in_use", Help: "DB connections in use"}, func() float64 {
-						s, _ := stats().DB()
-						return float64(s.Stats().InUse)
-					}),
-					prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "idle", Help: "DB idle connections"}, func() float64 {
-						s, _ := stats().DB()
-						return float64(s.Stats().Idle)
-					}),
-					prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "wait_count", Help: "DB wait count"}, func() float64 {
-						s, _ := stats().DB()
-						return float64(s.Stats().WaitCount)
-					}),
-					prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "wait_duration_seconds", Help: "DB wait duration seconds"}, func() float64 {
-						s, _ := stats().DB()
-						return s.Stats().WaitDuration.Seconds()
-					}),
-				)
+				registerDbMetricsOnce.Do(func() {
+					prometheus.MustRegister(
+						prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "open_connections", Help: "DB open connections"}, func() float64 {
+							s, _ := stats().DB()
+							return float64(s.Stats().OpenConnections)
+						}),
+						prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "in_use", Help: "DB connections in use"}, func() float64 {
+							s, _ := stats().DB()
+							return float64(s.Stats().InUse)
+						}),
+						prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "idle", Help: "DB idle connections"}, func() float64 {
+							s, _ := stats().DB()
+							return float64(s.Stats().Idle)
+						}),
+						prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "wait_count", Help: "DB wait count"}, func() float64 {
+							s, _ := stats().DB()
+							return float64(s.Stats().WaitCount)
+						}),
+						prometheus.NewGaugeFunc(prometheus.GaugeOpts{Namespace: "currency", Subsystem: "db_pool", Name: "wait_duration_seconds", Help: "DB wait duration seconds"}, func() float64 {
+							s, _ := stats().DB()
+							return s.Stats().WaitDuration.Seconds()
+						}),
+					)
+				})
 				return db, nil
 			}
 			if e != nil {

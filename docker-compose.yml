@@ -43,10 +43,9 @@ services:
     container_name: currency_migrator
     command: ["/bin/migrator"]
   seed:
-    profiles: ["manual"]
     build: .
     container_name: currency_seed
-    command: ["/bin/seed"]
+    command: ["true"]
     depends_on:
       db:
         condition: service_healthy
