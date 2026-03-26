@@ -1,0 +1,45 @@
+{
+  "title": "Currency Internals",
+  "tags": ["currency"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "DB pool utilization",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "currency_db_pool_in_use", "legendFormat": "in_use"},
+        {"expr": "currency_db_pool_open_connections", "legendFormat": "open"},
+        {"expr": "currency_db_pool_idle", "legendFormat": "idle"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Worker last run",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "currency_worker_last_run_timestamp_seconds{job=\"rates_update\"}", "legendFormat": "last run"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Worker processed",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "increase(currency_worker_jobs_processed_total{job=\"rates_update\",result=\"success\"}[1h])", "legendFormat": "success 1h"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Go runtime",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "go_goroutines", "legendFormat": "goroutines"},
+        {"expr": "process_resident_memory_bytes", "legendFormat": "rss"}
+      ]
+    }
+  ]
+}
+

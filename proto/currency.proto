@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package pkg;
+option go_package = "your/module/path/pkg;pkg";
+
+message CurrencyRequest {
+  string date_from = 1;
+  string date_to = 2;
+}
+
+message Rate {
+  string date = 1;
+  float rate = 2;
+}
+
+message CurrencyRates {
+  string currency = 1;
+  repeated Rate rates = 2;
+}
+
+message CurrencyRatesList {
+  repeated CurrencyRates items = 1;
+}
+
+service RatesService {
+  rpc GetRatesByDates(CurrencyRequest) returns (CurrencyRatesList);
+  rpc GetAllRates(Empty) returns (CurrencyRates);
+}
+
+message Empty {}

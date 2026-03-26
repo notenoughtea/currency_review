@@ -1,0 +1,165 @@
+services:
+  db:
+    image: postgres:15
+    container_name: currency_db
+    environment:
+      POSTGRES_DB: currency_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5111:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d currency_db -h 127.0.0.1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+  auth-generator:
+    image: artyomyatsenko/final-task-auth-generator:latest
+    ports:
+      - "8082:8082"
+    environment:
+      AUTH_TOKEN_LIFETIME: 3600
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+  adminer:
+    image: adminer
+    container_name: currency_adminer
+    restart: always
+    ports:
+      - "8111:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on:
+      - db
+
+  migrator:
+    build: .
+    container_name: currency_migrator
+    command: ["/bin/migrator"]
+  seed:
+    build: .
+    container_name: currency_seed
+    command: ["true"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      CONFIG_PATH: /app/config.yaml
+    restart: "no"
+
+
+  currency:
+    build: .
+    container_name: currency_service
+    command: ["/bin/currency"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      CONFIG_PATH: /app/config.yaml
+    ports:
+      - "50051:50051"
+      - "2112:2112"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 50051"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+
+  cron:
+    build: .
+    container_name: currency_cron
+    command: ["/bin/cron"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+    environment:
+      CONFIG_PATH: /app/config.yaml
+
+  gateway:
+    build: .
+    container_name: currency_gateway
+    command: ["/bin/gateway"]
+    depends_on:
+      db:
+        condition: service_healthy
+      currency:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      CONFIG_PATH: /app/config.yaml
+      CURRENCY_GRPC_ADDR: currency:50051
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: loki
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+
+  promtail:
+    image: grafana/promtail:2.9.8
+    container_name: promtail
+    command: ["-config.file=/etc/promtail/config.yaml"]
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail/config.yaml:/etc/promtail/config.yaml:ro
+    depends_on:
+      - loki
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - gateway
+      - currency
+
+volumes:
+  db_data:
+  grafana_data:
+  prometheus_data:
+  loki_data:

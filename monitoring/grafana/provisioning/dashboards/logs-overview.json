@@ -1,0 +1,59 @@
+{
+  "title": "Logs Overview",
+  "schemaVersion": 36,
+  "version": 1,
+  "tags": ["logs", "loki", "docker"],
+  "panels": [
+    {
+      "type": "logs",
+      "title": "All docker logs",
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 8},
+      "options": {"showLabels": true, "wrapLogMessage": true},
+      "datasource": "Loki",
+      "targets": [
+        {"expr": "{job=\"docker\"}"}
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Gateway container logs",
+      "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8},
+      "options": {"showLabels": true, "wrapLogMessage": true},
+      "datasource": "Loki",
+      "targets": [
+        {"expr": "{container=\"currency_gateway\"}"}
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Errors (substring)",
+      "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
+      "options": {"showLabels": true, "wrapLogMessage": true},
+      "datasource": "Loki",
+      "targets": [
+        {"expr": "{job=\"docker\"} |= \"ERROR\""}
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Errors/Warns (regex)",
+      "gridPos": {"x": 0, "y": 24, "w": 24, "h": 8},
+      "options": {"showLabels": true, "wrapLogMessage": true},
+      "datasource": "Loki",
+      "targets": [
+        {"expr": "{job=\"docker\"} |~ \"ERROR|WARN\""}
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "JSON parsed errors (level=error)",
+      "gridPos": {"x": 0, "y": 32, "w": 24, "h": 8},
+      "options": {"showLabels": true, "wrapLogMessage": true},
+      "datasource": "Loki",
+      "targets": [
+        {"expr": "{job=\"docker\"} | json | level=\"error\""}
+      ]
+    }
+  ]
+}
+

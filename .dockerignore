@@ -1,0 +1,12 @@
+.git
+logs
+**/*.md
+**/*.log
+**/*_test.go
+**/.DS_Store
+**/node_modules
+**/bin
+**/dist
+**/build
+**/.idea
+**/.vscode

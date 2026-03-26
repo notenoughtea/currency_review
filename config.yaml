@@ -1,0 +1,20 @@
+---
+DefaultBaseCurrency: USD
+outer_currency_url: https://latest.currency-api.pages.dev/v1/currencies/rub.json
+server:
+  port: 8081
+  host: 0.0.0.0
+DB:
+  host: db
+  user: admin
+  password: admin
+  dbname: currency_db
+  port: 5432
+  sslmode: disable
+  TimeZone: UTC
+  Connect_timeout: 10
+GRPC:
+  port: 50051
+  protocol: tcp
+auth:
+  base_url: http://auth-generator:8080
